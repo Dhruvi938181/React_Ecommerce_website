@@ -1,0 +1,363 @@
+body{
+  margin-top: 100px;
+}
+
+/* home */
+
+.product-card {
+  overflow: hidden;
+  position: relative;
+}
+
+.product-img {
+  height: 350px;
+  object-fit: cover;
+  width: 100%;
+  border-radius: 5px;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-img {
+  transform: scale(1.02);
+}
+
+/* Add to Cart Button */
+.add-to-cart-btn {
+  position: absolute;
+  bottom: -45px;
+  left: 0;
+  width: 100%;
+  background-color: #212529; /* Default dark color */
+  color: #fff;
+  border: none;
+  border-radius: 0;
+  padding: 10px 0;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Show button on hover */
+.product-card:hover .add-to-cart-btn {
+  bottom: 0;
+  opacity: 1;
+}
+
+/* 🟤 Change background color on hover */
+.add-to-cart-btn:hover {
+  background-color: #92614c; /* your accent/brownish tone */
+  color: #fff;
+}
+
+
+/* category */
+.single-product-row {
+  transition: all 0.3s ease;
+}
+
+.single-product-row:hover {
+  /* transform: translateY(-3px); */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+
+
+
+/* header */
+.nav-link{
+  text-decoration: none;
+}
+.nav-link:hover{
+  text-decoration: underline;
+}
+
+
+/* main */
+
+.carousel-indicators [data-bs-target]  {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #000;
+}
+.carousel-indicators .active {
+  background-color: #fffdfb;
+  width: 14px;
+  height: 14px;
+}
+.shop {
+  background-color: #92614c;
+  border: none;
+  height: 60px;
+  width: 180px;
+  color: white;
+}
+
+.shop:hover {
+  background-color: #000;
+  color: white;
+}
+
+.slide1 {
+  height: 700px;
+  background-image: url("https://wpbingo-lumei.myshopify.com/cdn/shop/files/slider-4-1.jpg?crop=center&height=800&v=1733194605&width=1920");
+  background-size: cover;
+  background-position: center;
+}
+
+.slide2 {
+  height: 700px;
+  background-image: url("https://wpbingo-lumei.myshopify.com/cdn/shop/files/slider-4-2.jpg?crop=center&height=800&v=1733194998&width=1920");
+  background-size: cover;
+  background-position: center;
+}
+
+.slide3 {
+  height: 700px;
+  background-image: url("https://wpbingo-lumei.myshopify.com/cdn/shop/files/slider-4-3.jpg?crop=center&height=800&v=1733195096&width=1920");
+  background-size: cover;
+  background-position: center;
+}
+
+.carousel-item h1 {
+  font-size: 55px;
+  width: 550px;
+}
+.carousel-item p {
+  font-size: 25px;
+}
+
+@media (max-width: 576px) {
+  .carousel-item h1 {
+    font-size: 28px;
+    width: 100%;
+    margin-left: 20px;
+  }
+
+  .carousel-item p {
+    font-size: 19px;
+    margin-left: 20px;
+  }
+  .carousel-item button{
+    margin-left: 20px;
+  }
+}
+
+/* images */
+
+.img-3 {
+  height: 46%;
+}
+
+@media (max-width: 768px) {
+  .img-3 {
+    height: 41%;
+  }
+}
+@media (max-width: 1200px) {
+  .img-3 {
+    height: 45%;
+  }
+}
+
+/* subscribe */
+
+.img {
+ background-image: url("../src/Component/assests/bg.png");
+  background-size: cover;
+  background-position: center;
+  height: 70vh;
+  width: 100%;
+  position: relative; 
+}
+
+
+.join {
+  font-size: 35px;
+  letter-spacing: 3px;
+}
+
+/* footer */
+
+.footer-column {
+  word-wrap: break-word;
+  white-space: normal;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* images */
+/* .arrive {
+  background-image: url("https://wpbingo-lumei.myshopify.com/cdn/shop/files/banner-19.jpg?crop=center&height=1004&v=1733197071&width=700");
+  background-size: cover;
+  background-position: center;
+}
+
+.hide {
+  display: none;
+  background-color: white;
+}
+
+.hide:hover {
+  display: block;
+} */
+
+.content-box {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background-color: white;
+  color: black;
+  padding: 20px 30px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.4s ease-in-out;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.col-md-6:hover .content-box,
+.img-3:hover .content-box {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+
+
+
+.shop1 {
+  background-color: #000;
+  border: none;
+  height: 45px;
+  width: 280px;
+  color: white;
+}
+
+.shop1:hover {
+  background-color: #92614c;
+  color: white;
+}
+
+
+.search-input {
+  width: 0;
+  opacity: 0;
+  transition: all 0.3s ease;
+  position: absolute;
+  top: -5px;
+  left: 30px; 
+  height: 30px;
+  border-radius: 4px;
+  padding: 0 10px;
+  border: 1px solid #ccc;
+  z-index: 100;
+}
+
+.search-input.open {
+  width: 180px;
+  opacity: 1;
+}
+
+
+
+
+
+/* image hover */
+.image-container {
+  width: 500px;
+  height: 500px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.zoom-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease, transform-origin 0.3s ease;
+  cursor: zoom-in;
+}
+
+
+/* wishlist */
+.in-stock {
+  color: green;
+  font-weight: bold;
+}
+
+.out-stock {
+  color: red;
+  font-weight: bold;
+}
+
+
+/* cart */
+/* LG se chhoti screens (Laptop se neeche) */
+@media (max-width: 992px) {
+
+  /* Table Head Hide */
+  .table thead {
+    display: none !important;
+  }
+
+  /* Each row card style */
+  .table tr {
+    display: block;
+    margin-bottom: 18px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+  }
+
+  /* Each cell row */
+  .table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left !important;
+    padding: 10px 5px !important;
+    border: none !important;
+  }
+
+  /* Side label jaise: Product: Qty: ... */
+  .table td span.fw-bold.d-lg-none {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+    font-weight: 600;
+  }
+
+  /* Product ke image block ki left spacing remove */
+  .table img {
+    margin-left: 0 !important;
+  }
+}
+
+
+
+
+/* footer */
+
+.footer-links li,
+.footer-social li {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.footer-links li:hover,
+.footer-social li:hover {
+  color: #92614c;
+}
+
+.footer-social li svg {
+  vertical-align: middle;
+}
+
+
+
