@@ -1,17 +1,18 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import "../App.css";
 import { myAction } from "./Cart/CartAction";
 
-const ProductInfo = () => {
+const ProductInfo = ({ onCartClick }) => {
   const [product, setProduct] = useState({});
   const [showDesc, setShowDesc] = useState(false);
   const { category, id } = useParams();
   const dispatch = useDispatch();
   const cart = useSelector((store) => store);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchApi();
@@ -37,10 +38,9 @@ const ProductInfo = () => {
       return;
     }
 
+    // ✅ Check by name (ignore case)
     const exists = cart.find(
-      (item) =>
-        String(item.id) === String(product.id) &&
-        item.category === product.category
+      (item) => item.name.toLowerCase() === product.name.toLowerCase()
     );
 
     if (exists) {
@@ -50,18 +50,22 @@ const ProductInfo = () => {
         text: "This product is already added to your cart!",
         confirmButtonColor: "#92614c",
       });
+      if (onCartClick) onCartClick();
       return;
     }
 
-    dispatch(myAction({ ...product, quantity: 1 }));
+    const newItem = { ...product, id, category, quantity: 1 };
+    dispatch(myAction(newItem));
 
     Swal.fire({
       icon: "success",
       title: "Added to Cart!",
       text: "Your product has been successfully added.",
       showConfirmButton: false,
-      timer: 1500,
+      timer: 1000,
     });
+
+    if (onCartClick) onCartClick();
   };
 
   const handleMouseMove = (e) => {
@@ -81,10 +85,10 @@ const ProductInfo = () => {
 
   return (
     <div className="container" style={{ marginTop: "120px" }}>
-      <div className="row  align-items-start" style={{gap:"120px"}}> 
-        <div className="col-lg-5">
+      <div className="row align-items-start g-5">
+        <div className="col-lg-5 col-md-12">
           <div
-            className="image-container rounded shadow-lg overflow-hidden position-relative"
+            className="image-container  position-relative"
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             style={{ cursor: "zoom-in", backgroundColor: "#f9f9f9" }}
@@ -93,16 +97,18 @@ const ProductInfo = () => {
               src={product.image}
               alt={product.name}
               className="zoom-image w-100"
-              style={{ transition: "transform 0.4s ease, filter 0.3s" }}
+              style={{
+                transition:
+                  "transform 0.4s ease, transform-origin 0.4s ease, filter 0.3s",
+              }}
             />
             {!product.available && (
               <span
-                className="position-absolute top-0 start-0  text-white px-3 py-1"
+                className="position-absolute top-0 start-0 text-white px-3 py-1"
                 style={{
                   borderBottomRightRadius: "10px",
                   fontSize: "0.85rem",
                   backgroundColor: "#d9534f",
-                      color: "white",
                 }}
               >
                 Out of Stock
@@ -111,10 +117,10 @@ const ProductInfo = () => {
           </div>
         </div>
 
-        <div className="col-lg-5">
+        <div className="col-lg-7 col-md-12">
           <div
-            className="p-4 rounded shadow-lg border"
-            style={{ backgroundColor: "#fff", transition: "transform 0.2s" }}
+            className="p-4 rounded shadow-sm border"
+            style={{ backgroundColor: "#fff" }}
           >
             <h1 className="mb-3" style={{ fontWeight: 600 }}>
               {product.name}
@@ -140,14 +146,17 @@ const ProductInfo = () => {
                 <span
                   key={i}
                   style={{
-                    color: i < Math.round(product.rating || 0) ? "#FFD700" : "#ccc",
+                    color:
+                      i < Math.round(product.rating || 0)
+                        ? "#FFD700"
+                        : "#ccc",
                   }}
                 >
                   ★
                 </span>
               ))}{" "}
-              ({product.rating || 0}) from {product.totalRatings} ratings &{" "}
-              {product.totalReviews} reviews
+              ({product.rating || 0}) from {product.totalRatings || 0} ratings &
+              {product.totalReviews || 0} reviews
             </p>
 
             <div className="mb-4">
@@ -157,15 +166,7 @@ const ProductInfo = () => {
                     product.available ? "available" : "unavailable"
                   }`}
                 >
-                  {product.available ? (
-                    <>
-                      <span>✔</span> In Stock
-                    </>
-                  ) : (
-                    <>
-                      <span>✖</span> Out of Stock
-                    </>
-                  )}
+                  {product.available ? "✔ In Stock" : "✖ Out of Stock"}
                 </span>
               )}
             </div>
@@ -173,12 +174,18 @@ const ProductInfo = () => {
             <div className="mb-4">
               <strong>Available Offers:</strong>
               <ul className="list-unstyled mt-2">
-                {product.offers?.map((offer, idx) => (
-                  <li key={idx} className="mb-1">
-                    <span className="badge bg-warning text-dark me-2">Offer</span>{" "}
-                    {offer}
-                  </li>
-                ))}
+                {product.offers && product.offers.length > 0 ? (
+                  product.offers.map((offer, idx) => (
+                    <li key={idx} className="mb-1">
+                      <span className="badge bg-warning text-dark me-2">
+                        Offer
+                      </span>
+                      {offer}
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-muted">No offers available</li>
+                )}
               </ul>
             </div>
 
@@ -188,7 +195,7 @@ const ProductInfo = () => {
             >
               <div
                 className="accordion-header p-3"
-                style={{ cursor: "pointer", userSelect: "none" }}
+                style={{ cursor: "pointer" }}
                 onClick={() => setShowDesc(!showDesc)}
               >
                 <strong>Product Description</strong>
@@ -196,7 +203,9 @@ const ProductInfo = () => {
               </div>
               {showDesc && (
                 <div className="accordion-body p-3 border-top">
-                  <p className="text-muted mb-0">{product.discription}</p>
+                  <p className="text-muted mb-0">
+                    {product.discription || "No description available."}
+                  </p>
                 </div>
               )}
             </div>
@@ -220,13 +229,11 @@ const ProductInfo = () => {
                   e.target.style.backgroundColor = "#92614c";
                   e.target.style.color = "#fff";
                   e.target.style.transform = "scale(1.05)";
-                  e.target.style.boxShadow = "0 8px 20px rgba(0,0,0,0.15)";
                 }}
                 onMouseLeave={(e) => {
                   e.target.style.backgroundColor = "#fff";
                   e.target.style.color = "#92614c";
                   e.target.style.transform = "scale(1)";
-                  e.target.style.boxShadow = "none";
                 }}
               >
                 Add to Cart

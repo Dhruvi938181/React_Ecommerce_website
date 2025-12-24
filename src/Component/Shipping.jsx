@@ -1,5 +1,7 @@
+import { motion } from 'framer-motion';
 const Shipping = () => {
   return (
+    <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}> 
     <div>
       <div className="container-fluid text-center text-sm-start mt-5" >
         <div className="row">
@@ -41,6 +43,7 @@ const Shipping = () => {
         </div>
       </div>
     </div>
+    </motion.div>
   );
 };
 

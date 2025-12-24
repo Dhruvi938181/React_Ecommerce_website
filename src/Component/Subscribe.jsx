@@ -1,8 +1,8 @@
+import { motion } from 'framer-motion';
 import "../App.css";
-
 const Subscribe = () => {
   return (
-    <div>
+    <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}> <div>
       <div className="img d-flex flex-column justify-content-center align-items-end mt-5">
         <div
           style={{
@@ -25,7 +25,7 @@ const Subscribe = () => {
           <button className="shop mt-2">SUBSCRIBE</button>
         </div>
       </div>
-    </div>
+    </div></motion.div>
   );
 };
 

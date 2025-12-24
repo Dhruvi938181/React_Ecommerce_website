@@ -1,6 +1,8 @@
+
+import { motion } from 'framer-motion';
 const Images = () => {
   return (
-    <div className="container-fluid mt-5" >
+    <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}><div className="container-fluid mt-5" >
       <div className="row">
         <div className="col-md-6 mt-3" style={{ position: "relative", overflow: "hidden" }}>
           <img className="w-100 h-100" style={{ objectFit: "cover" }} src="https://wpbingo-lumei.myshopify.com/cdn/shop/files/banner-19.jpg?crop=center&height=1004&v=1733197071&width=700" alt="" />
@@ -41,7 +43,7 @@ const Images = () => {
           </div>
         </div>
       </div>
-    </div>
+    </div></motion.div>
   );
 };
 

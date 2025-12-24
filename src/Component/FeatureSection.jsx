@@ -1,4 +1,4 @@
-
+import { motion } from 'framer-motion';
 import { useState } from "react";
 import { Modal } from "react-bootstrap";
 
@@ -9,7 +9,8 @@ const FeatureSection = () => {
   const handleClose = () => setShowVideo(false);
 
   return (
-    <div className="container-fluid  mt-5">
+    <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}
+    > <div className="container-fluid  mt-5" id="play">
       <div className="row align-items-center">
         <div className="col-lg-5 mb-4 ms-xl-5 mb-md-0">
           <h6 className="text-uppercase">Bold and Beautiful</h6>
@@ -85,7 +86,7 @@ const FeatureSection = () => {
            <iframe width="1000" height="600" src="https://www.youtube.com/embed/yycVNcishrE" title="Britney Manson - FΛSHION (Single, 2023)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
         </div>
       </Modal>
-    </div>
+    </div></motion.div>
   );
 };
 

@@ -1,8 +1,10 @@
+import { motion } from 'framer-motion';
 import { Link } from "react-router-dom";
 const CategorySlider = () => {
   return (
+    <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}> 
     <div>
-      <h2 className="mt-5 text-center">Shop by Categories</h2>
+      <h2 className="mt-5 text-center" id="category">Shop by Categories</h2>
       <div className="container-fluid mt-5">
         <div className="row d-flex justify-content-center">
           <div className="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 text-center">
@@ -64,6 +66,7 @@ const CategorySlider = () => {
         </div>
       </div>
     </div>
+    </motion.div>
   );
 };
 

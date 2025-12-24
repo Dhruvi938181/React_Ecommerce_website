@@ -1,145 +1,213 @@
 import { useEffect, useState } from "react";
-import { FiX } from "react-icons/fi";
-import { useDispatch, useSelector } from "react-redux";
+import { Offcanvas } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import { decrementQuantity, incrementQuantity, removeFromCart } from "./Cart/CartAction";
+import Swal from "sweetalert2";
 
-const Cart = () => {
-  const cart = useSelector((store) => store);
-  const dispatch = useDispatch();
+const Cart = ({ show, onClose }) => {
+  const [cart, setCart] = useState([]);
+  const [couponCode, setCouponCode] = useState("");
+  const [discount, setDiscount] = useState(0);
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) setUser(JSON.parse(savedUser));
-  }, []);
+  // Load cart from localStorage
+ useEffect(() => {
+  const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
+  setCart(savedCart);
 
-  const totalprice = cart.reduce((acc, item) => acc + Number(item.price) * (1 + (item.gst || 0) / 100) * item.quantity, 0);
+  // Reset discount every time cart opens
+  setDiscount(0);
+  localStorage.removeItem("couponApplied");
+}, [show]);
 
-  const discount = totalprice * 0.1;
-  const finalTotal = totalprice - discount;
 
-  if (!user) {
-    return (
-      <div className="container text-center  mb-5" style={{ marginTop: "120px" }}>
-        <h2 className="mb-3">Please Sign In</h2>
-        <p className="mb-4">You need to be signed in to view your shopping cart and checkout.</p>
-        <button className="shop1 rounded-1 mb-3 fs-4" onClick={() => navigate("/signin")}>
-          Sign In
-        </button>
-      </div>
+  const incrementQuantity = (id) => {
+    const updatedCart = cart.map((item) =>
+      item.id === id ? { ...item, quantity: (item.quantity || 1) + 1 } : item
     );
-  }
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
 
-  if (!cart || cart.length === 0) {
-    return (
-      <div className="container text-center  mb-5" style={{ marginTop: "120px", minHeight: "27vh" }}>
-        <h2>Your Cart is Empty !!</h2>
-        <p>Add some products to your cart to see them here.</p>
-        <Link to="/">
-          <button className="btn btn-dark rounded-1 mb-3 fs-5 px-4 py-2">Go Shopping</button>
-        </Link>
-      </div>
+  const decrementQuantity = (id) => {
+    const updatedCart = cart.map((item) =>
+      item.id === id && item.quantity > 1
+        ? { ...item, quantity: item.quantity - 1 }
+        : item
     );
-  }
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
+
+  const removeItem = (id) => {
+    const updatedCart = cart.filter((item) => item.id !== id);
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+    Swal.fire({
+      icon: "info",
+      title: "Item removed from cart 🛒",
+      showConfirmButton: false,
+      timer: 1200,
+    });
+  };
+
+  const totalPrice = cart.reduce(
+    (acc, item) => acc + item.price * (item.quantity || 1),
+    0
+  );
+
+  const applyCoupon = () => {
+    if (couponCode.trim().toUpperCase() === "SAVE10") {
+      const discountAmount = totalPrice * 0.1;
+      setDiscount(discountAmount);
+      localStorage.setItem("couponApplied", "SAVE10");
+
+      Swal.fire({
+        icon: "success",
+        title: "Coupon applied! 10% discount added 🎉",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } else {
+      setDiscount(0);
+      localStorage.removeItem("couponApplied");
+      Swal.fire({
+        icon: "error",
+        title: "Invalid coupon code ❌",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+  };
+
+  const finalTotal = totalPrice - discount;
+
+  const handleCheckout = () => {
+    if (cart.length === 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "Your cart is empty!",
+        showConfirmButton: false,
+        timer: 1200,
+      });
+      return;
+    }
+
+    // Save checkout info
+    const checkoutData = {
+      items: cart,
+      subtotal: totalPrice,
+      discount,
+      total: finalTotal,
+    };
+    localStorage.setItem("checkoutData", JSON.stringify(checkoutData));
+
+    Swal.fire({
+      icon: "success",
+      title: "Proceeding to Checkout!",
+      showConfirmButton: false,
+      timer: 1000,
+    });
+
+    onClose();
+    navigate("/checkout");
+  };
 
   return (
-    <div className="container mb-5" style={{ marginTop: "120px" }}>
-      <h1 className="fw-bold mb-4 text-center">Shopping Cart 🛒</h1>
+    <Offcanvas show={show} onHide={onClose} placement="end">
+      <Offcanvas.Header closeButton>
+        <Offcanvas.Title>Shopping Cart 🛒</Offcanvas.Title>
+      </Offcanvas.Header>
 
-      <div className="table-responsive border">
-        <table className="table align-middle text-center">
-          <thead>
-            <tr>
-              <th scope="col">Product</th>
-              <th scope="col">Quantity</th>
-              <th scope="col">Price</th>
-              <th scope="col">GST %</th>
-              <th scope="col">Final Price</th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {cart.map((el, i) => (
-              <tr key={i} className="align-middle">
-                <td className="text-start align-middle">
-                  <span className="fw-bold d-lg-none me-2" style={{ marginLeft: "0px" }}>
-                    Product:
-                  </span>
-                  <div className="d-flex align-items-center flex-wrap">
-                    <img src={el.image} alt={el.name} className="img-fluid rounded" style={{ width: "70px", height: "70px", objectFit: "cover" }} />
-                    <span className="fw-semibold ms-3">{el.name}</span>
+      <Offcanvas.Body>
+        {cart.length === 0 ? (
+          <p className="text-muted">Your cart is empty!</p>
+        ) : (
+          <>
+            {cart.map((item) => (
+              <div
+                key={item.id}
+                className="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2"
+              >
+                <div className="d-flex align-items-center">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    width="60"
+                    height="60"
+                    className="me-3 rounded"
+                  />
+                  <div>
+                    <h6 className="mb-0">{item.name}</h6>
+                    <small className="text-muted">₹{item.price}</small>
+                    <div className="d-flex align-items-center mt-1">
+                      <button
+                        className="btn btn-sm btn-outline-secondary me-2"
+                        onClick={() => decrementQuantity(item.id)}
+                        disabled={item.quantity <= 1}
+                      >
+                        -
+                      </button>
+                      <span>{item.quantity || 1}</span>
+                      <button
+                        className="btn btn-sm btn-outline-secondary ms-2"
+                        onClick={() => incrementQuantity(item.id)}
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
-                </td>
+                </div>
 
-                <td className="text-start align-middle">
-                  <span className="fw-bold d-lg-none me-2" style={{ marginLeft: "0px" }}>Qty:</span>
-                  <div className="d-flex justify-content-center align-items-center">
-                    <button className="btn btn-outline-dark btn-sm me-2" onClick={() => dispatch(decrementQuantity(i))}>
-                      −
-                    </button>
-                    <span>{el.quantity}</span>
-                    <button className="btn btn-outline-dark btn-sm ms-2" onClick={() => dispatch(incrementQuantity(i))}>
-                      +
-                    </button>
-                  </div>
-                </td>
-
-                <td className="text-start align-middle">
-                  <span className="fw-bold d-lg-none me-2">Price:</span>₹{Number(el.price).toFixed(2)}
-                </td>
-
-                <td className="text-start align-middle">
-                  <span className="fw-bold d-lg-none me-2">GST:</span>
-                  {el.gst || 0}%
-                </td>
-
-                <td className="text-start align-middle">
-                  {" "}
-                  <span className="fw-bold d-lg-none me-2">Final:</span>₹{(Number(el.price) * (1 + (el.gst || 0) / 100) * el.quantity).toFixed(2)}
-                </td>
-
-                <td>
-                  <button
-                    onClick={() => dispatch(removeFromCart(i))}
-                    className="btn btn-light border-0 rounded-circle d-flex justify-content-center align-items-center mx-auto"
-                    style={{ width: "40px", height: "40px" }}>
-                    <FiX size={18} color="#555" />
-                  </button>
-                </td>
-              </tr>
+                <button
+                  className="btn btn-sm btn-outline-danger"
+                  onClick={() => removeItem(item.id)}
+                >
+                  ✕
+                </button>
+              </div>
             ))}
 
-            <tr>
-              <td colSpan="6" className="text-end fw-semibold fs-5">
-                Total (Before Discount): ₹{totalprice.toFixed(2)}
-              </td>
-            </tr>
-            <tr>
-              <td colSpan="6" className="text-end fw-semibold text-danger fs-5">
-                Discount (10% OFF): −₹{discount.toFixed(2)}
-              </td>
-            </tr>
-            <tr className="fw-bold fs-4 border-top">
-              <td colSpan="6" className="text-end">
-                Final Total: ₹{finalTotal.toFixed(2)}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+            {/* Coupon */}
+            <div className="mt-3">
+              <input
+                type="text"
+                placeholder="Enter Coupon Code (SAVE10)"
+                className="form-control mb-2"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+              />
+              <button className="btn btn-dark w-100" onClick={applyCoupon}>
+                Apply Coupon
+              </button>
+            </div>
 
-      <div className="d-flex justify-content-end mt-4">
-        <button className="shop1 rounded-2 me-3" onClick={() => navigate("/checkout")}>
-          Proceed to Checkout
-        </button>
-        <button className="shop1 rounded-2  p-2" onClick={() => navigate("/")}>
-          Back to Shopping
-        </button>
-      </div>
-    </div>
+            {/* Total */}
+            <div className="mt-3 text-end">
+              <h6>Subtotal: ₹{totalPrice.toFixed(2)}</h6>
+              {discount > 0 && (
+                <p className="text-success">Discount: -₹{discount.toFixed(2)}</p>
+              )}
+              <h5>Total: ₹{finalTotal.toFixed(2)}</h5>
+              <button className="shop1 btn  w-100 mt-2" onClick={handleCheckout}>
+                Proceed to Checkout
+              </button>
+            </div>
+
+            {/* Back to Home */}
+            <div className="mt-3">
+              <Link
+                to="/"
+                className="shop1  btn  w-100"
+                onClick={onClose}
+              >
+                Back to Home
+              </Link>
+            </div>
+          </>
+        )}
+      </Offcanvas.Body>
+    </Offcanvas>
   );
 };
 

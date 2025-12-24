@@ -1,7 +1,7 @@
 import axios from "axios";
+import { motion } from 'framer-motion';
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-
 const Category = () => {
   const [product, setProduct] = useState([]);
   const { category } = useParams();
@@ -20,7 +20,7 @@ const Category = () => {
   };
 
   return (
-    <div className="container mb-5" style={{ marginTop: "120px" }}>
+    <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}> <div className="container mb-5" style={{ marginTop: "120px" }}>
       {product.map((el, i) => (
         <div
           className="row align-items-center shadow-sm mb-4 mt-5 p-3 single-product-row"
@@ -54,7 +54,7 @@ const Category = () => {
           </div>
         </div>
       ))}
-    </div>
+    </div></motion.div>
   );
 };
 

@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import "../App.css";
 const Main = () => {
 
@@ -8,9 +9,10 @@ const Main = () => {
     }
   };
   return (
+    <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}> 
     <div>
-      <div id="carouselExampleCaptions" className="carousel slide " data-bs-ride="carousel" >
-        <div className="carousel-indicators">
+      <div id="carouselExampleCaptions" className="carousel slide" style={{marginTop:"80px"}} data-bs-ride="carousel" >
+        <div className="carousel-indicators text-center">
           <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" className="active" aria-current="true" aria-label="Slide 1"></button>
           <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
           <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
@@ -49,6 +51,7 @@ const Main = () => {
         </div>
       </div>
     </div>
+    </motion.div>
   );
 };
 

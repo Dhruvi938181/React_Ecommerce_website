@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-const Home = ({ searchQuery }) => {
+
+const Home = ({ searchQuery, onCartOpen }) => {
   const [product, setProduct] = useState([]);
   const [visible, setVisible] = useState(8);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -13,7 +14,6 @@ const Home = ({ searchQuery }) => {
 
   useEffect(() => {
     fetchApi();
-
     const savedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
     setWishlist(savedWishlist.map(String));
 
@@ -60,7 +60,9 @@ const Home = ({ searchQuery }) => {
 
     Swal.fire({
       icon: "success",
-      title: wishlist.includes(String(id)) ? "Removed from Wishlist!" : "Added to Wishlist!",
+      title: wishlist.includes(String(id))
+        ? "Removed from Wishlist!"
+        : "Added to Wishlist!",
       showConfirmButton: false,
       timer: 1200,
     });
@@ -78,96 +80,135 @@ const Home = ({ searchQuery }) => {
       return;
     }
 
-    let updatedCart = [...cart];
-    const existingItem = updatedCart.find((p) => p.id === item.id);
+    // ✅ Check if same product (same id & same category) already exists
+    const existingItem = cart.find(
+      (p) =>
+        String(p.id).trim() === String(item.id).trim() &&
+        String(p.category).trim().toLowerCase() ===
+          String(item.category).trim().toLowerCase()
+    );
 
     if (existingItem) {
       Swal.fire({
         title: "Already in Cart!",
         text: `${item.name} is already in your cart.`,
         icon: "info",
-        timer: 1500,
+        timer: 1200,
         showConfirmButton: false,
       });
-    } else {
-      updatedCart.push({ ...item, quantity: 1 });
-      setCart(updatedCart);
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
-
-      Swal.fire({
-        title: "Added to Cart!",
-        text: `${item.name} has been added successfully.`,
-        icon: "success",
-        timer: 1500,
-        showConfirmButton: false,
-      });
+      return;
     }
+
+    const updatedCart = [...cart, { ...item, quantity: 1 }];
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+    Swal.fire({
+      title: "Added to Cart!",
+      text: `${item.name} has been added successfully.`,
+      icon: "success",
+      timer: 1200,
+      showConfirmButton: false,
+    });
+
+    onCartOpen();
   };
 
-  const filteredProducts = product.filter((el) => el.name.toLowerCase().includes(searchQuery?.toLowerCase() || ""));
+  const filteredProducts = product.filter((el) =>
+    el.name.toLowerCase().includes(searchQuery?.toLowerCase() || "")
+  );
 
   return (
     <div className="container mt-3" id="products">
       <h2 className="mt-5" style={{ fontFamily: "inherit" }}>
-        <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
           Best Seller
         </motion.div>
       </h2>
 
-      <div className="row mt-3 g-4">
-        
-        {filteredProducts.slice(0, visible).map((el) => (
-          <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3" key={el.id}>
-            <div className="card h-100 shadow-sm border-0 position-relative product-card">
-              <div className="position-relative product-img-container" style={{ overflow: "hidden" }}>
-                <Link to={`/${el.category}`}>
-                  <img src={el.image} alt={el.name} className="card-img-top product-img" style={{ height: "350px", objectFit: "cover", width: "100%" }} />
-                </Link>
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+      >
+        <div className="row mt-3 g-4">
+          {filteredProducts.slice(0, visible).map((el) => (
+            <div
+              className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3"
+              key={el.id}
+            >
+              <div className="card h-100 shadow-sm border-0 position-relative product-card">
+                <div
+                  className="position-relative product-img-container"
+                  style={{ overflow: "hidden" }}
+                >
+                  <Link to={`/${el.category}`}>
+                    <img src={el.image} className="card-img-top" alt={el.name} />
+                  </Link>
 
-                {(!el.available || el.available === 0) && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "0px",
-                      left: "0px",
-                      backgroundColor: "#d9534f",
-                      color: "white",
-                      padding: "5px 10px",
-                      fontSize: "0.9rem",
-                      fontWeight: "600",
-                      borderRadius: "5px",
-                      zIndex: 10,
-                    }}>
-                    Out of Stock
-                  </div>
-                )}
+                 {/* Out of Stock Badge */}
+{!el.available && (
+  <div
+    className="hover-item"
+    style={{
+      position: "absolute",
+      top: "0px",
+      left: "0px",
+      backgroundColor: "#d9534f",
+      color: "white",
+      padding: "5px 10px",
+      fontSize: "0.9rem",
+      fontWeight: "600",
+      borderRadius: "5px",
+      zIndex: 10,
+    }}
+  >
+    Out of Stock
+  </div>
+)}
 
-                <span
-                  onClick={() => toggleWishlist(el.id)}
-                  style={{
-                    cursor: "pointer",
-                    fontSize: "1.8rem",
-                    color: wishlist.includes(String(el.id)) ? "red" : "gray",
-                    position: "absolute",
-                    top: "10px",
-                    right: "10px",
-                    zIndex: 10,
-                  }}>
-                  {wishlist.includes(String(el.id)) ? <AiFillHeart /> : <AiOutlineHeart />}
-                </span>
+{/* Heart Icon */}
+<span
+  onClick={() => toggleWishlist(el.id)}
+  className="hover-item"
+  style={{
+    cursor: "pointer",
+    fontSize: "1.8rem",
+    color: wishlist.includes(String(el.id)) ? "red" : "gray",
+    position: "absolute",
+    top: "10px",
+    right: "10px",
+    zIndex: 10,
+  }}
+>
+  {wishlist.includes(String(el.id)) ? (
+    <AiFillHeart />
+  ) : (
+    <AiOutlineHeart />
+  )}
+</span>
 
-                <button className="btn add-to-cart-btn" onClick={() => addToCart(el)}>
-                  Add to Cart
-                </button>
-              </div>
 
-              <div className="card-body text-center">
-                <h5 className="card-title">{el.name}</h5>
+                  <button
+                    className="btn add-to-cart-btn"
+                    onClick={() => addToCart(el)}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+
+                <div className="card-body text-center">
+                  <h5 className="card-title">{el.name}</h5>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </motion.div>
 
       {visible < filteredProducts.length && (
         <div className="text-center mt-4">
@@ -177,7 +218,10 @@ const Home = ({ searchQuery }) => {
               <p className="mt-2">Loading more products...</p>
             </div>
           ) : (
-            <button className="shop btn rounded-0 fs-5 px-4" onClick={loadMore}>
+            <button
+              className="shop btn rounded-0 fs-5 px-4"
+              onClick={loadMore}
+            >
               Load More
             </button>
           )}
