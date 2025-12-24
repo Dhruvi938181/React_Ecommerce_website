@@ -4,23 +4,23 @@ const Bill = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Get data from location state (if coming from Checkout)
+  
   const { cart, form, totalprice, discount, finalTotal } = location.state || {};
 
-  // ✅ Fallback to localStorage if not passed through state
+  
   const storedTotal = Number(totalprice) || Number(localStorage.getItem("totalprice")) || 0;
   const storedDiscount = Number(discount) || Number(localStorage.getItem("discount")) || 0;
   const storedFinal =
     Number(finalTotal) || Number(localStorage.getItem("finalTotal")) || storedTotal - storedDiscount;
 
-  // ✅ Function to clear cart & wishlist on going back
+  
   const handleBackToShopping = () => {
-    // Clear cart and wishlist from localStorage
+  
     localStorage.removeItem("cart");
     localStorage.removeItem("wishlist");
 
-    // Optional: If your Redux also holds these, you can refresh the page to reset state
-    window.location.href = "/"; // This ensures UI reflects empty cart/wishlist
+    
+    window.location.href = "/"; 
   };
 
   if (!cart) {
@@ -39,7 +39,6 @@ const Bill = () => {
     <div className="container mb-5" style={{ marginTop: "120px" }}>
       <h1 className="text-center mb-4">Order Bill</h1>
 
-      {/* Customer Info */}
       <div className="border p-4 rounded mb-3">
         <h4>Customer Info</h4>
         <p><b>Name:</b> {form?.name}</p>
@@ -50,7 +49,6 @@ const Bill = () => {
         <p><b>Payment Method:</b> {form?.paymentMethod}</p>
       </div>
 
-      {/* Order Summary */}
       <div className="border p-4 rounded mb-3">
         <h4>Order Summary</h4>
         {cart.map((item, i) => (
@@ -78,7 +76,6 @@ const Bill = () => {
         </div>
       </div>
 
-      {/* Back Button */}
       <div className="text-center">
         <button className="shop1 btn p-2" onClick={handleBackToShopping}>
           Back to Shopping
