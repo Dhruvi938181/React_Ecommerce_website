@@ -1,21 +1,27 @@
 import { motion } from 'framer-motion';
 import { useLocation, useNavigate } from "react-router-dom";
+
 const Bill = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   const { cart, form, totalprice, discount, finalTotal } = location.state || {};
 
-  const storedTotal = Number(totalprice) || Number(localStorage.getItem("totalprice")) || 0;
-  const storedDiscount = Number(discount) || Number(localStorage.getItem("discount")) || 0;
+  const storedTotal =
+    Number(totalprice) || Number(localStorage.getItem("totalprice")) || 0;
+
+  const storedDiscount =
+    Number(discount) || Number(localStorage.getItem("discount")) || 0;
+
   const storedFinal =
-    Number(finalTotal) || Number(localStorage.getItem("finalTotal")) || storedTotal - storedDiscount;
+    Number(finalTotal) ||
+    Number(localStorage.getItem("finalTotal")) ||
+    storedTotal - storedDiscount;
 
   const handleBackToShopping = () => {
     localStorage.removeItem("cart");
     localStorage.removeItem("wishlist");
-
-    window.location.href = "/"; 
+    window.location.href = "/";
   };
 
   if (!cart) {
@@ -30,53 +36,62 @@ const Bill = () => {
   }
 
   return (
-    <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}> 
-    <div className="container mb-5" style={{ marginTop: "120px" }}>
-      <h1 className="text-center mb-4">Order Bill</h1>
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+    >
+      <div className="container mb-5" style={{ marginTop: "120px" }}>
+        <h1 className="text-center mb-4">Order Bill</h1>
 
-      <div className="border p-4 rounded mb-3">
-        <h4>Customer Info</h4>
-        <p><b>Name:</b> {form?.name}</p>
-        <p><b>Email:</b> {form?.email}</p>
-        <p>
-          <b>Address:</b> {form?.address}, {form?.city}, {form?.state} - {form?.zip}
-        </p>
-        <p><b>Payment Method:</b> {form?.paymentMethod}</p>
-      </div>
+        <div className="border p-4 rounded mb-3">
+          <h4>Customer Info</h4>
+          <p><b>Name:</b> {form?.name}</p>
+          <p><b>Email:</b> {form?.email}</p>
+          <p>
+            <b>Address:</b> {form?.address}, {form?.city}, {form?.state} - {form?.zip}
+          </p>
+          <p><b>Payment Method:</b> {form?.paymentMethod}</p>
+        </div>
 
-      <div className="border p-4 rounded mb-3">
-        <h4>Order Summary</h4>
-        {cart.map((item, i) => (
-          <div key={i} className="d-flex justify-content-between mb-2">
-            <span>
-              {item.name} x {item.quantity}
-            </span>
-            <span>
-              ₹{(item.price * item.quantity * (1 + (item.gst || 0) / 100)).toFixed(2)}
-            </span>
+        <div className="border p-4 rounded mb-3">
+          <h4>Order Summary</h4>
+          {cart.map((item, i) => (
+            <div key={i} className="d-flex justify-content-between mb-2">
+              <span>
+                {item.name} x {item.quantity}
+              </span>
+              <span>
+                ₹{(item.price * item.quantity * (1 + (item.gst || 0) / 100)).toFixed(2)}
+              </span>
+            </div>
+          ))}
+
+          <hr />
+
+          <div className="d-flex justify-content-between">
+            <span>Total</span>
+            <span>₹{storedTotal.toFixed(2)}</span>
           </div>
-        ))} 
-        <hr />
-        <div className="d-flex justify-content-between">
-          <span>Total</span>
-          <span>₹{storedTotal.toFixed(2)}</span>
-        </div>
-        <div className="d-flex justify-content-between text-danger">
-          <span>Discount</span>
-          <span>−₹{storedDiscount.toFixed(2)}</span>
-        </div>
-        <div className="d-flex justify-content-between fw-bold border-top pt-2">
-          <span>Final Total</span>
-          <span>₹{storedFinal.toFixed(2)}</span>
-        </div>
-      </div>
 
-      <div className="text-center">
-        <button className="shop1 btn p-2" onClick={handleBackToShopping}>
-          Back to Shopping
-        </button>
+          <div className="d-flex justify-content-between text-danger">
+            <span>Discount</span>
+            <span>−₹{storedDiscount.toFixed(2)}</span>
+          </div>
+
+          <div className="d-flex justify-content-between fw-bold border-top pt-2">
+            <span>Final Total</span>
+            <span>₹{storedFinal.toFixed(2)}</span>
+          </div>
+        </div>
+
+        <div className="text-center">
+          <button className="shop1 btn p-2" onClick={handleBackToShopping}>
+            Back to Shopping
+          </button>
+        </div>
       </div>
-    </div></motion.div>
+    </motion.div>
   );
 };
 
