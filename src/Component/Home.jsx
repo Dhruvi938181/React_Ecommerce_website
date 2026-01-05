@@ -21,14 +21,15 @@ const Home = ({ searchQuery, onCartOpen }) => {
     setCart(savedCart);
   }, []);
 
-  const fetchApi = async () => {
-    try {
-      const info = await axios.get("http://localhost:3000/data");
-      setProduct(info.data);
-    } catch (error) {
-      console.error("API Error:", error);
-    }
-  };
+const fetchApi = async () => {
+  try {
+    const res = await axios.get("/db.json");
+    setProduct(res.data.data);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 
   useEffect(() => {
     if (searchQuery && searchQuery.trim() !== "") {

@@ -9,12 +9,10 @@ const Cart = ({ show, onClose }) => {
   const [discount, setDiscount] = useState(0);
   const navigate = useNavigate();
 
-  // Load cart from localStorage
  useEffect(() => {
   const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
   setCart(savedCart);
 
-  // Reset discount every time cart opens
   setDiscount(0);
   localStorage.removeItem("couponApplied");
 }, [show]);
@@ -93,7 +91,6 @@ const Cart = ({ show, onClose }) => {
       return;
     }
 
-    // Save checkout info
     const checkoutData = {
       items: cart,
       subtotal: totalPrice,
@@ -168,7 +165,6 @@ const Cart = ({ show, onClose }) => {
               </div>
             ))}
 
-            {/* Coupon */}
             <div className="mt-3">
               <input
                 type="text"
@@ -182,7 +178,6 @@ const Cart = ({ show, onClose }) => {
               </button>
             </div>
 
-            {/* Total */}
             <div className="mt-3 text-end">
               <h6>Subtotal: ₹{totalPrice.toFixed(2)}</h6>
               {discount > 0 && (
@@ -194,7 +189,6 @@ const Cart = ({ show, onClose }) => {
               </button>
             </div>
 
-            {/* Back to Home */}
             <div className="mt-3">
               <Link
                 to="/"
