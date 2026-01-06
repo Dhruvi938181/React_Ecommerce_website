@@ -10,10 +10,16 @@ const Category = () => {
     fetchApi();
   }, [category]); 
 
-  const fetchApi = async () => {
+ const fetchApi = async () => {
     try {
-      const info = await axios.get(`http://localhost:3000/${category}`);
-      setProduct(info.data);
+      const res = await axios.get("/db.json");
+
+      const filtered = res.data.data.filter(
+        (item) =>
+          item.category.toLowerCase() === category.toLowerCase()
+      );
+
+      setProduct(filtered);
     } catch (error) {
       console.error("API Error:", error);
     }

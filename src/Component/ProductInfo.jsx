@@ -18,14 +18,24 @@ const ProductInfo = ({ onCartClick }) => {
     fetchApi();
   }, [category, id]);
 
-  const fetchApi = async () => {
-    try {
-      const info = await axios.get(`http://localhost:3000/${category}/${id}`);
-      setProduct(info.data);
-    } catch (error) {
-      console.error("API Error:", error);
-    }
-  };
+ const fetchApi = async () => {
+  try {
+    const res = await axios.get("/db.json");
+
+    const allProducts = res.data.data;
+
+    const singleProduct = allProducts.find(
+      (item) =>
+        item.category.toLowerCase() === category.toLowerCase() &&
+        String(item.id) === String(id)
+    );
+
+    setProduct(singleProduct || {});
+  } catch (error) {
+    console.error("API Error:", error);
+  }
+};
+
 
   const AddTocart = () => {
     if (!product.available) {
